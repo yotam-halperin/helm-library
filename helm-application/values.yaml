@@ -1,0 +1,230 @@
+
+
+name: example
+createApplication: 
+  enabled: true # specify to create an application
+  kind: Deployment # Deployment, StatefulSet
+
+# namespace: default # default namespace default
+
+# globalLabels:
+#   key3: value3
+
+labels: 
+  app: example
+#   key2: value2
+# annotations:
+#   imageregistry: "https://hub.docker.com/"
+
+
+replicaCount: 2
+# autoscaling:
+#   enabled: false
+#   labels:
+#     key5: value5
+#   annotations:
+#     ann2: ans2
+#   replication:
+#     minReplicas: 1
+#     maxReplicas: 3
+#   targetCPUUtilizationPercentage: 50
+#   targetMemoryUtilizationPercentage: 50
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 50
+#   - type: Pods
+#     pods:
+#       metric:
+#         name: packets-per-second
+#       target:
+#         type: AverageValue
+#         averageValue: 1k
+#   - type: Object
+#     object:
+#       metric:
+#         name: requests-per-second
+#       describedObject:
+#         apiVersion: networking.k8s.io/v1
+#         kind: Ingress
+#         name: main-route
+#       target:
+#         type: Value
+#         value: 10k
+  
+
+# resources:
+#   enabled: false
+#   requests:
+#     minCPU: "200m"
+#     minMemory: "0.5Gi"
+#   limits: 
+#     maxCPU: "2"
+#     maxMemory: "4Gi"
+
+# globalSecurityContext:
+#   enabled: false
+#   runAsUser: 2000
+#   runAsGroup: 3000
+#   fsGroup: 1000
+
+containers:
+- # name: example_name # defaults to pod name
+  image: example_image
+  # tag: # default latest
+  # pullPolicy: # default IfNotPresent # IfNotPresent, Always, Never
+  # ports:
+  # - name: http
+  #   port: 80
+  #   protocol: TCP
+  servicePort:
+    enabled: false
+  #   portNameOverride: 
+  # env:
+  #   key1: value1
+  #   key2: value2
+  # envFrom:
+  #   secrets:
+  #   - secret_1
+  #   - secret_2
+  #   configmaps:
+  #   - cm_1
+  #   - cm_2
+  # securityContext:
+  #   runAsUser: 1000
+  #   runAsGroup: 3000
+  #   fsGroup: 2000
+  # livenessProbe:
+  # readinessProbe:
+  # volumeMounts:
+  #   example_pvcVolume: /path/in/container
+  #   example_cmVolume: /path/in/container/2
+  # command: ["echo"]
+  # args: ["hello world!"]
+
+# imagePullSecrets:
+# - first_secret_name
+# - second_secret_name
+
+# serviceAccountNameOverride: "override"
+
+# volumes:
+#   pvcVolume:
+#     enabled: false
+#   cmVolume:
+#     enabled: false
+#     items: 
+#     - key1
+#     - key2
+#   extraVolumes:
+#   - name: mydir
+#     hostPath:
+#       path: /var/local/aaa
+#       type: DirectoryOrCreate
+#   - name: myfile
+#     hostPath:
+#       path: /var/local/aaa/1.txt
+#       type: FileOrCreate
+
+# initContainers:
+# - image: nginx
+
+# nodeName: "example_node"
+# nodeSelector:
+#   labelKey: labelValue
+# affinity:
+#   nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: size
+#           operator: In
+#           values:
+#           - small
+#           - medium
+
+# tolerations:
+# - key: "key1"
+#   operator: "Exists"
+#   effect: "NoSchedule"
+
+###############################################3
+
+service:
+  enabled: true
+  name: example
+  labels:
+    key1: value1
+  annotations:
+    ann1: ans1
+  type: ClusterIP # ClusterIP, NodePort, LoadBalancer # default ClusterIP
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 5000
+  # - port: 80
+  #   targetPort: 5000
+  #   nodePort: 30007
+  selector:
+    app: example
+
+# serviceAccount:
+#   enabled: false
+#   assignToDeployment: false
+#   name: yotam
+#   annotations:
+#     ann1: ans1
+#   labels:
+#     key4: value4
+
+# pvc:
+#   enabled: false
+#   name: example
+#   annotations:
+#     ann1: ans1
+#   labels:
+#     key4: value4
+#   accessModes: # ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod
+#   - ReadWriteOnce
+#   - ReadWriteMany
+#   volumeMode: Filesystem # Filesystem, Block
+#   storageSize: 5Gi
+#   resourcesOverride:
+#     requests:
+#       storage: 8Gi
+#   selector:
+#     matchLabels:
+#       key1: value1
+#     matchExpressions:
+#       - {key: environment, operator: In, values: [dev]}
+#   dataSource:
+#     name: existing-src-pvc-name
+#     kind: PersistentVolumeClaim
+#   storageClassName: className
+
+# configmap:
+#   enabled: false
+#   name: example
+#   labels:
+#     key1: value1
+#   annotations:
+#     ann1: ans1
+#   data:
+#     key1: value1
+#     key2: value2
+
+# secret:
+#   enabled: false
+#   name: example
+#   # type: kubernetes.io/basic-auth # default "Opaque"
+#   labels:
+#     key1: value1
+#   annotations:
+#     ann1: ans1
+#   data:
+#     secret1: password1
+#     secret2: password2

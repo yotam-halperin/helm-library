@@ -1,0 +1,6 @@
+dependencies:
+- name: helm-base
+  repository: file://../helm-base
+  version: 0.1.0
+digest: sha256:0b04c847443d89014a23b253ed85b7c6f55e8487730365f6bb7e7511d425b046
+generated: "2023-12-07T23:53:26.570382541+02:00"
