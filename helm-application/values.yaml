@@ -65,15 +65,15 @@ replicaCount: 2
 #     maxCPU: "2"
 #     maxMemory: "4Gi"
 
-# globalSecurityContext:
-#   enabled: false
-#   runAsUser: 2000
-#   runAsGroup: 3000
-#   fsGroup: 1000
+globalSecurityContext:
+  enabled: true
+  runAsUser: 2000
+  runAsGroup: 3000
+  fsGroup: 1000
 
 containers:
-- # name: example_name # defaults to pod name
-  image: example_image
+- # name: example-name # defaults to pod name
+  image: example-image
   # tag: # default latest
   # pullPolicy: # default IfNotPresent # IfNotPresent, Always, Never
   # ports:
@@ -132,7 +132,7 @@ containers:
 # initContainers:
 # - image: nginx
 
-# nodeName: "example_node"
+# nodeName: "example-node"
 # nodeSelector:
 #   labelKey: labelValue
 # affinity:

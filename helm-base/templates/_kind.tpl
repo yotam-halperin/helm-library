@@ -53,7 +53,7 @@ spec:
       {{- end }}
       {{- if and (hasKey .Values "globalSecurityContext") (.Values.globalSecurityContext.enabled)}}
       securityContext:
-          {{- include "helm-base.securityContext" .Values.globalSecurityContext -}}
+          {{- include "helm-base.securityContext" .Values.globalSecurityContext | indent 4 -}}
       {{- end }}
       containers:
       {{- range .Values.containers }}
