@@ -16,6 +16,10 @@
 {{- include "helm-base.service" . }}
 ---
 {{- end -}}
+{{- if and (hasKey .Values "ingress") (.Values.ingress.enabled) }}
+{{- include "helm-base.ingress" . }}
+---
+{{- end -}}
 {{- if and (hasKey .Values "serviceAccount") (.Values.serviceAccount.enabled) }}
 {{- include "helm-base.serviceAccount" . }}
 ---

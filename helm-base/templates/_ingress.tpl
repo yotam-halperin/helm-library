@@ -1,61 +1,50 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "helm-base.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
-  {{- end }}
-{{- end }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- define "helm-base.ingress" -}}
+{{- $root := . -}}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ .Values.ingress.name | default .Values.name }}
+  namespace: {{ .Values.namespace | default "default" }}
+  {{- if or (hasKey .Values.ingress "labels") (hasKey .Values "globalLabels") }}
   labels:
-    {{- include "helm-base.labels" . | nindent 4 }}
+    {{- if hasKey .Values.ingress "labels" }}
+    {{- toYaml .Values.ingress.labels | nindent 4 }}
+    {{- end }}
+    {{- if hasKey .Values "globalLabels" }}
+    {{- toYaml .Values.globalLabels | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  {{- if hasKey .Values.ingress "annotations"}}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- end }}
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
+  {{- if hasKey .Values.ingress "ingressClassName" }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if and (hasKey .Values.ingress "tls") .Values.ingress.tls.enabled }}
   tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+  - hosts:
+    {{- if hasKey .Values.ingress.tls "hosts" }}
+    {{- with .Values.ingress.tls.hosts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- end }}
+    {{- if hasKey .Values.ingress.tls "secretName" }}
+    secretName: {{ .Values.ingress.tls.secretName }}
     {{- end }}
   {{- end }}
+  {{- if or (hasKey .Values.ingress "rules") (and (hasKey .Values.ingress "serviceRule") .Values.ingress.serviceRule.enabled )}}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
-            {{- end }}
-            backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $fullName }}
-                port:
-                  number: {{ $svcPort }}
-              {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-              {{- end }}
-          {{- end }}
-    {{- end }}
+  {{- if hasKey .Values.ingress "rules" }}
+  {{- with .Values.ingress.rules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- end }}
+  {{- if and (hasKey .Values.ingress "serviceRule") .Values.ingress.serviceRule.enabled }}
+  {{- include "helm-base.ingressServiceRule" $root | indent 2 }}
+  {{- end }}
+  {{- end }}
 {{- end }}

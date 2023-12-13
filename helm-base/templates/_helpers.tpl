@@ -83,3 +83,18 @@ limits:
     {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "helm-base.ingressServiceRule" }}
+{{- range .Values.ingress.serviceRule.routes }}
+- host: {{ .host }}
+  http:
+    paths:
+    - pathType: Prefix
+      path: {{ .path }}
+      backend:
+        service:
+          name: {{ $.Values.service.name | default $.Values.name }}
+          port:
+            number: {{ .servicePort }}
+{{- end }}
+{{- end }}

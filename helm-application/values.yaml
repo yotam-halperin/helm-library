@@ -155,7 +155,7 @@ containers:
 
 service:
   enabled: true
-  name: example
+  name: example123
   labels:
     key1: value1
   annotations:
@@ -171,6 +171,38 @@ service:
   #   nodePort: 30007
   selector:
     app: example
+
+ingress:
+  enabled: true
+  labels:
+    key1: value1
+  annotations:
+    ann1: ans1
+  ingressClassName: nginx
+  tls:
+    enabled: true
+    hosts:
+    - example1.com
+    - example2.com
+    secretName: certificate_secret
+  serviceRule:
+    enabled: true
+    routes:
+    - servicePort: 80
+      host: example1.com
+      path: /examplePath
+  rules:
+  - host: https-example.foo.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: service1
+            port:
+              number: 8080
+  
 
 # serviceAccount:
 #   enabled: false
